@@ -1,0 +1,46 @@
+https://drive.google.com/drive/folders/1bgElYwcnrcxEKrNzRTyZgTbjwFA7niTe
+
+Estudio de Minería de Procesos en CCR en Pontevedra.
+
+#ANTES BIOPSIA: (Selección de pacientes con biopsia positiva para cáncer colorrectal fuera del 1/1/2016 y el 31/12/2018.)
+                Punto de partida: primera biopsia positiva (fecha de extracción) coincidente con una colonoscopia.
+        
+        Relevancia de los eventos previos:
+            - Describir los tiempos entre episodios:
+                - Visitas a médico de familia (MF)
+                - Urgencias
+                - Analíticas
+                - Consultas a Digestivo/Medicina Interna
+
+
+#DESPUES BIOPSIA: (Selección de pacientes con biopsia positiva para cáncer colorrectal entre el 1/1/2016 y el 31/12/2018.)
+                Punto de partida: primera biopsia positiva (fecha de extracción) coincidente con una colonoscopia.
+
+            Relevancia en eventos posteriores: 
+                - Tiempo hasta valoración en consulta de Cirugía General
+                - Tiempo hasta Oncología
+                - Tiempo hasta inicio de quimioterapia (QT) u hospitalizaciones (entre otros). 
+
+            No es relevante: 
+                - La atención en Médico de Familia
+                - Dudosamente relevante la atención en Urgencias.
+
+
+NOTAS:
+
+    - Eventos de Urgencias y PAC pueden fusionarse si mejora el análisis.
+    - Análisis por minería de procesos de eventos previos y posteriores a la colonoscopia/biopsia.
+    - Relevancia de asistencias en MF cercanas a la biopsia diagnóstica y patrones de comportamiento en visitas médicas.
+    - Descripción de procesos más repetidos y sus tiempos medios.
+    - Consideración de outlayers en el análisis.
+    - Anonimizar cualquier información re
+
+AÑADIDOS:
+
+    Los eventos previos de asistencia en MF son relevantes si están cerca de la biopsia diagnóstica:
+        - Interesa conocer cuántas veces van al médico en un tiempo establecido (por ejemplo 6 meses) para ver si hay patrones definidos de comportamiento. 
+        - También necesitamos el tiempo entre la última atención en MF y la biopsia diagnóstica. 
+
+        --> Crear dos columnas sinteticas:
+            - Dentro de un rango establecido (6 meses) anterior a fecha extracción, contar el nº de visitas al medico de familia.
+            - Duración entre ultima atención MF y biopsia positiva
