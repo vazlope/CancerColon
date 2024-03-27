@@ -105,6 +105,20 @@ def delete_nan(df):
     df = df.dropna(subset=['NASI seudonimizado', 'Actividad','FECHA','FECHA_FIN'])
     return df
 
+
+def anonymize_atributes(df, attri, generic_name = 'Value'):
+    #! crear diccionario sustitucion
+    dict_attri = {}
+    values = df[attri].dropna().unique().tolist()
+    
+    for index, value in enumerate(values):
+        dict_attri[value] = f'{generic_name}_{index+1}'
+    print(dict_attri)
+    #! Sustituir en df con diccionario
+    df[attri] = df[attri].replace(dict_attri)
+    return df
+
+
 def fix_dates(df, start_year=None, end_year=None):
     df['FECHA'] = pd.to_datetime(df['FECHA'], format = 'mixed')
     df['FECHA_FIN'] = pd.to_datetime(df['FECHA_FIN'], format= 'mixed')
@@ -140,20 +154,25 @@ if __name__ == "__main__":
     #! Preprocesado
     if preprocess:
         print(colon['Actividad'].unique())
-        print('\nConfiguration Appply: \n')
+        print(colon.columns)
+        #Anonimizar valores  
+        colon = anonymize_atributes(colon,'Hospital', 'Hospital' )
+        colon = anonymize_atributes(colon,'PAC', 'PAC' )
+        #Aplicar configuracion
         colon = colon_configuration_apply(colon)
-        print('\nEliminar autobucles: \n')
+        #Eliminar autobucles
         colon = self_loops(colon)
+        #Arreglar fechas
         colon = fix_dates(colon, start_year= 2012, end_year = 2020)
-        print('\nDelete nan: \n')
+        #Eliminar nan
         colon = delete_nan(colon)
-        # Eliminar '\n' y '\r' en valores y cabeceras
+        #Eliminar '\n' y '\r' en valores y cabeceras
         colon = colon.replace({r'\r': '', r'\n': ''}, regex=True)
+        #Guardar version completa
         colon.to_csv("Data/processed_data/CancerColon_"+str(version)+".csv", date_format="%d-%m-%Y %H:%M:%S", index=False,  encoding="UTF-8", sep = ';')
         print(colon.columns)
+        #Crear version basica
         colon_basic = colon[['NASI seudonimizado', 'FECHA', 'FECHA_FIN','Actividad']]
-        #colon_basic = self_loops_fix(colon_basic)
+        #Guardar version basica 
         colon_basic.to_csv("Data/processed_data/CancerColon_basico_"+str(version)+".csv", date_format="%d-%m-%Y %H:%M:%S", index=False,  encoding="UTF-8", sep = ';')
-        print(colon_basic.shape)
-        print(colon_basic['NASI seudonimizado'].nunique())
         print('\nDataset procesado guardado\n')

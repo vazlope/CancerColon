@@ -59,7 +59,7 @@ def chosen_activities(df):
     actividades_conservar = [ 
         #'Dispensación medicamento ATC' ,
         #'Urgencias Hospitalarias' ,
-        #'Asistencia a punto de Atención Continuada' ,
+        'Asistencia a punto de Atención Continuada' ,
         #'Visita médico familia' ,
         'Inicio episodio' ,
         'Ingreso Hospitalizacion' , #? crear actividad doble
