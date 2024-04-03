@@ -17,8 +17,8 @@ def create_mining_df(df, columnas_fecha, name):
                     else:
                         nueva_fila['FECHA'] = fila[columna_fecha]
                         nueva_fila['FECHA_FIN'] = fila[columna_fecha]
-                    if name == 'quirofano':
-                        nombre_actividad = str('programacion Quirofano')
+                    if name == 'Farmacia onlolóxica':
+                        nombre_actividad = str('Dispensación farmacia onlolóxica')
                     else:
                         nombre_actividad = str(columna_fecha)
                     nueva_fila['Actividad'] = nombre_actividad.replace('Fecha', '')

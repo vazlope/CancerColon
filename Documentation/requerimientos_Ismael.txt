@@ -39,8 +39,61 @@ AÑADIDOS:
 
     Los eventos previos de asistencia en MF son relevantes si están cerca de la biopsia diagnóstica:
         - Interesa conocer cuántas veces van al médico en un tiempo establecido (por ejemplo 6 meses) para ver si hay patrones definidos de comportamiento. 
-        - También necesitamos el tiempo entre la última atención en MF y la biopsia diagnóstica. 
+        - También necesitamos el tiempo entre la última atención de medico de familia y la biopsia diagnóstica. 
 
         --> Crear dos columnas sinteticas:
             - Dentro de un rango establecido (6 meses) anterior a fecha extracción, contar el nº de visitas al medico de familia.
             - Duración entre ultima atención MF y biopsia positiva
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
+DUDAS:
+
+    - Para determinada colonoscopia hay que tener en cuenta no la fecha de la cita, si no la de la prescripción.¿?
+    - Entender farmacia Oncologica ¿QUE ES Y SI NOS INTERESA?
+    - Lo relevante en los eventos posteriores a la biopsia diagnóstica es el tiempo hasta:
+        - Valoración en consulta de Cirugía General,
+        - Oncología, 
+        - Inicio de quimioterapia (QT)
+        - Hospitalizaciones (entre otros)
+
+
+CAMBIOS V0.7 A V0.8:
+
+  PRIORITARIO:
+    - Eliminar actividad Inicio episodio ✅
+    - Añadir actividad cita con apellido del tipo de Cita y dejar unicamente los relacionados con COLONOSCOPIA u otros importantes ✅
+    - Sacar previamente columna booleana con trazas que tienen VDR (SE PUEDE USAR COLUMNA tipo via rapida) ✅
+    - Pendiente de añadir info cuando Ismael responda
+
+  SECUNDARIO:
+    - Añadir columnas de conteo del numero de visitas al medico familia en un plazo de 6 meses antes de la fecha extracción
+    - Otra columna con duración entre última visita MF y fecha extracción
+
+
+RESPUESTA CORREO:
+
+    ♋ Los eventos en Farmacia oncolóxica son las quimioterapia que recibe cada paciente: ✅
+        - Es interesante para medir tiempos desde el diagnóstico hasta el primer ciclo de QT 
+        - Aunque también puede ser interesante ver la distribución temporal de estas QT a lo largo del proceso de cada paciente.
+
+    ⚕️ En Consultas y pruebas especializadas:
+        - La Data Cita es la fecha de realización de la prueba/consulta y la Data prescripción es la fecha de solicitud. 
+        - Ambas son útiles para medir los tiempos entre que se pide la prueba y su realización. 
+
+        Pero en esa pestaña solo interesan:
+            - Las Colonoscopias ✅
+                -> CAPNOR: COLONOSCOPIA & COLONOSCOPIA VIA RAPIDA
+
+            - Las Consultas en Digestivo/Medicina interna (Actividades CAPNOR, Consulta Enfermidade + GNA, Dixestivo, Medicina interna) ✅
+                -> CAPNOR: CONSULTA DE ENFERMIDADE y GNA : DIXESTIVO & MEDICINA INTERNA
+            - Las Consultas en Cirugía General/Oncología (igual que antes) ✅
+                -> CAPNOR: CONSULTA DE ENFERMIDADE y GNA : ONCOLOXIA MEDICA & CIRURXIA XERAL E DIXESTIVA
+
+            - La realización de los TC abdominales. ✅
+                -> CAPNOR: CONSULTA DE ENFERMIDADE 
+
+
+        En las colonoscopias nos interesa la Data Cita como "evento de anclaje": 
+            - Hay que asegurarse de que coincide con la primera biopsia disponible con Ca colon (pestaña APA, columna Data extracción). 
+            - Este evento de anclaje sirve para medir las demás actividades con respecto a él.
+

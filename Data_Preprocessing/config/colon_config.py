@@ -19,8 +19,8 @@ def chosen_atributtes(df):
         'Cód. CIAP 2',
         'Desc. CIAP 2',
         'Orixe',
-        'Lista diagnósticos',
-        'Lista procedementos',
+        # 'Lista diagnósticos',
+        # 'Lista procedementos',
         'Prioridade',
         'GNA',
         'Actividade CAPNOR',
@@ -29,23 +29,23 @@ def chosen_atributtes(df):
         'Tipo vía rápida',
         'Detalle tipo actividade',
         'Tipo programación',
-        'Cód. Centro seudonimizado',
+        #'Cód. Centro seudonimizado',
         'Cnp med. Seudonimizado',
         'Sexo',
         'Cola',
         'Tipo intervención',
         'Orixe PM/Diagnóstico',
         'PM/Diagnóstico',
-        'Cód. cat. CIE',
+        #'Cód. cat. CIE',
         'Categoría CIE',
         'Subcategoría CIE',
         'CENTRO',
         'SERVICIO',
         'MEDICO',
-        'TIPO MUESTRA',
+        #'TIPO MUESTRA',
         'MUESTRA',
         'DESCRIPCION',
-        'SNOMED',
+        #'SNOMED',
         'DATA EXTRACCIÓN'   ] 
     
     print(len(lista_defi))
@@ -57,20 +57,20 @@ def chosen_atributtes(df):
 def chosen_activities(df):
     # Lista de actividades a conservar 
     actividades_conservar = [ 
-        #'Dispensación medicamento ATC' ,
+        'Dispensación medicamento ATC' ,
         #'Urgencias Hospitalarias' ,
         'Asistencia a punto de Atención Continuada' ,
         #'Visita médico familia' ,
-        'Inicio episodio' ,
+        #'Inicio episodio' , #! No tener en cuenta
         'Ingreso Hospitalizacion' , #? crear actividad doble
         'Alta Hospitalizacion' ,
-        #'Preescripcion consultas y pruebas' ,
-        #'Cita (consultas y pruebas)' ,
+        #'Cita prescripcion' , #! incluir citas de caracter de Colón y booleano de VDR
+        'Cita' ,
         #'Año Nacimiento Paciente' , #? atributo
-        'Lista de Espera quirurgica - Inclusion' , #! crear actividad doble
+        'Lista de Espera quirurgica - Inclusion' , 
         #'Lista de Espera quirurgica - Remate' ,
         'Cirugia' ,
-        'Dispensación Farmacia Oncologica' ,
+        'Quimioterapia' , #! Entender que es (preguntarle a Ismael)
         'Defunción' ,
         'Prueba laboratorio (APA)' , #! crear actividad doble
   
@@ -93,14 +93,14 @@ def activity_traduction(df):
         'Data inicio episodio':'Inicio episodio' ,
         'Data ingreso' :'Ingreso Hospitalizacion' , #? crear actividad doble
         'Data de alta' :'Alta Hospitalizacion' ,
-        'Data prescrición' :'Preescripcion consultas y pruebas' ,
-        'Data cita' :'Cita (consultas y pruebas)' ,
+        'Data prescrición' :'Cita prescripcion' ,
+        'Data cita' :'Cita' ,
         'Día da semana da cita':'Día semana' , #! eliminar
         'Ano':'Año Nacimiento Paciente' , #? atributo
         'Data inclusión' :'Lista de Espera quirurgica - Inclusion' , 
         'Data remate' :'Lista de Espera quirurgica - Remate' ,
         'Data intervención' :'Cirugia' ,
-        'Data dispensación' :'Dispensación Farmacia Oncologica' ,
+        'Dispensación farmacia onlolóxica' :'Quimioterapia' ,
         'Data defunción 01/01/AAAA' :'Defunción' ,
         'DATA EXTRACCIÓN' :'APA eliminar' , #!Eliminar
         'DATA ENTRADA' :'Prueba laboratorio (APA)' , #! crear actividad doble
