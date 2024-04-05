@@ -9,6 +9,7 @@ def chosen_atributtes(df):
         'FECHA',
         'FECHA_FIN',
         'Actividad',
+        'Duracion Lista Espera',
         'Hospital',
         'Motivo de asistencia',
         'Motivo saída',
@@ -57,22 +58,22 @@ def chosen_atributtes(df):
 def chosen_activities(df):
     # Lista de actividades a conservar 
     actividades_conservar = [ 
-        'Dispensación medicamento ATC' ,
-        #'Urgencias Hospitalarias' ,
+        'Dispensación medicamento ATC' , #! AÑADIR SUS ATRIBUTOS DE ALGUNA MANERA
+        'Urgencias Hospitalarias' ,
         'Asistencia a punto de Atención Continuada' ,
-        #'Visita médico familia' ,
+        'Visita médico familia' ,
         #'Inicio episodio' , #! No tener en cuenta
-        'Ingreso Hospitalizacion' , #? crear actividad doble
+        'Ingreso hospitalario' , #? crear actividad doble
         'Alta Hospitalizacion' ,
         #'Cita prescripcion' , #! incluir citas de caracter de Colón y booleano de VDR
         'Cita' ,
         #'Año Nacimiento Paciente' , #? atributo
-        'Lista de Espera quirurgica - Inclusion' , 
-        #'Lista de Espera quirurgica - Remate' ,
+        'Entrada Lista de Espera' , 
+        'Salida Lista de Espera' ,
         'Cirugia' ,
         'Quimioterapia' , #! Entender que es (preguntarle a Ismael)
         'Defunción' ,
-        'Prueba laboratorio (APA)' , #! crear actividad doble
+        'Biopsia diagnóstica' , #! crear actividad doble
   
     ]
     print('\nEsto es la parte de eliminar actividades')
@@ -91,19 +92,19 @@ def activity_traduction(df):
         'Día asistencia':'Asistencia a punto de Atención Continuada' ,
         'Data consulta':'Visita médico familia' ,
         'Data inicio episodio':'Inicio episodio' ,
-        'Data ingreso' :'Ingreso Hospitalizacion' , #? crear actividad doble
+        'Data ingreso' :'Ingreso hospitalario' , #? crear actividad doble
         'Data de alta' :'Alta Hospitalizacion' ,
         'Data prescrición' :'Cita prescripcion' ,
         'Data cita' :'Cita' ,
         'Día da semana da cita':'Día semana' , #! eliminar
         'Ano':'Año Nacimiento Paciente' , #? atributo
-        'Data inclusión' :'Lista de Espera quirurgica - Inclusion' , 
-        'Data remate' :'Lista de Espera quirurgica - Remate' ,
+        'Data inclusión' :'Entrada Lista de Espera' , 
+        'Data remate' :'Salida Lista de Espera' ,
         'Data intervención' :'Cirugia' ,
         'Dispensación farmacia onlolóxica' :'Quimioterapia' ,
         'Data defunción 01/01/AAAA' :'Defunción' ,
         'DATA EXTRACCIÓN' :'APA eliminar' , #!Eliminar
-        'DATA ENTRADA' :'Prueba laboratorio (APA)' , #! crear actividad doble
+        'DATA ENTRADA' :'Biopsia diagnóstica' , #! crear actividad doble
         'DATA SALE': 'Emisión informe Laboratorio'
     }
     len(diccionario_actividades)

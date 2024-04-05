@@ -97,3 +97,59 @@ RESPUESTA CORREO:
             - Hay que asegurarse de que coincide con la primera biopsia disponible con Ca colon (pestaña APA, columna Data extracción). 
             - Este evento de anclaje sirve para medir las demás actividades con respecto a él.
 
+CAMBIOS V0.8 A V0.9:
+
+  - Dejar solo actividades de cirugia y entrada y salida de hospitalización, defunciones, extracción y quimioterapia
+  - Aunque los eventos seleccionados de cita no están como actividad(colonoscopias, TC abdominal, consultas...) hay una columna booleana para identificar que trazas contienen estos eventos
+  - Para las listas de espera, crear columna con la duración de la misma (duración en días)
+        -> Las trazas con esta columna a 0 no tenian lista de espera
+        -> Las trazas con un valor distinto a 0 tenian lista de espera (diferencia medida en días ya que el valor minimo son 2 dias)
+
+  - Las columnas booleanas creadas han sido pasadas a columnas de texto 
+
+
+##################################################################################################################################
+
+CAMBIOS V0.9 A V1.0:
+
+    TRAZA:
+
+    - 1 UNICO EVENTO ANTES: ( 1 tiempo x antes de biopsia)
+        - visita medico familia justo anterior a biopsia ( Acto del tipo interesante -> ATENCION PRIMARIA) 
+
+        - citas (consultas de los 4 tipos)
+
+    - biopsia diagnostica(fecha extraccion) EVENTO CLAVE
+
+    - ONCOLOXIA MEDICA & CIRURXIA XERAL E DIXESTIVA O DIXESTIVO & MEDICINA INTERNA
+    (el/los que aparezca justo despues de biopsia) (entre biosia y cirugia/quimio y si tiene ambos el que primero salga)
+
+    - Ingreso hospitalario
+
+    - CIRUGIA - 2 TIPOS APELLIDOS (URGENTE, PROGRAMADA) (cirugias de tipo XERAL E DIXESTIVA)
+
+    - ALta hospitalización
+
+    - 1ª QUIMIO (Eliminar autobucles posterior a primera aparición)
+
+    - DEFUNCION (si hay) - No prioritario - Ponerle fecha real de la defunción (no 1 meses despues del ultimo evento)
+
+
+    CONTEOS: 
+    - Laxantes (6 meses antes hasta biopsia)
+        RANGOS TEMPORALES: BIOPSIA(inicio), CIRUGIA, QUIMIO, DEFUNCION(fin)
+        - CUANTAS VECES FUE A Urgencias + PAC
+            - CuanTAS CONSULTAS DE ONCOLOXIA MEDICA & CIRURXIA XERAL E DIXESTIVA O DIXESTIVO & MEDICINA INTERNA
+            - Cuantos TAC ABDOMINAL
+            - Cuantas citas de tipo de colonoscopia
+        - Conteo de quimios
+
+
+    BI:
+
+    (1) - cuantos pacientes con VDR -> cita atención primaria(primer evento) a biopsia (sla de 2 semanas) -> grafica barras 
+    (2) - El arco entre biopsia y primer ciclo quimio (percentiles de duraciones)
+    (2) - arco biopsia y cirugia (percentiles de duraciones)
+    (3) - pestaña comparativa con duraciones y VDR, entre distintos tipos de quimio, mortalidad
+
+ 
