@@ -73,7 +73,7 @@ def chosen_activities(df):
         'Cirugia' ,
         'Quimioterapia' , #! Entender que es (preguntarle a Ismael)
         'Defunción' ,
-        'Biopsia diagnóstica' , #! crear actividad doble
+        'Colonoscopia diagnóstica' , #! crear actividad doble
   
     ]
     print('\nEsto es la parte de eliminar actividades')
@@ -104,7 +104,7 @@ def activity_traduction(df):
         'Dispensación farmacia onlolóxica' :'Quimioterapia' ,
         'Data defunción 01/01/AAAA' :'Defunción' ,
         'DATA EXTRACCIÓN' :'APA eliminar' , #!Eliminar
-        'DATA ENTRADA' :'Biopsia diagnóstica' , #! crear actividad doble
+        'DATA ENTRADA' :'Colonoscopia diagnóstica' , #! crear actividad doble
         'DATA SALE': 'Emisión informe Laboratorio'
     }
     len(diccionario_actividades)

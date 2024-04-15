@@ -136,13 +136,16 @@ CAMBIOS V0.9 A V1.0:
 
 
     CONTEOS: 
-    - Laxantes (6 meses antes hasta biopsia)
-        RANGOS TEMPORALES: BIOPSIA(inicio), CIRUGIA, QUIMIO, DEFUNCION(fin)
-        - CUANTAS VECES FUE A Urgencias + PAC
-            - CuanTAS CONSULTAS DE ONCOLOXIA MEDICA & CIRURXIA XERAL E DIXESTIVA O DIXESTIVO & MEDICINA INTERNA
-            - Cuantos TAC ABDOMINAL
-            - Cuantas citas de tipo de colonoscopia
-        - Conteo de quimios
+    - Laxantes (6 meses antes hasta biopsia) ✅
+        RANGOS TEMPORALES: BIOPSIA(inicio), CIRUGIA, QUIMIO, DEFUNCION(fin):
+            URGENCIAS +PAC:
+                - CUANTAS VECES FUE A Urgencias + PAC
+            CITAS:
+                - CuanTAS CONSULTAS DE ONCOLOXIA MEDICA & CIRURXIA XERAL E DIXESTIVA O DIXESTIVO & MEDICINA INTERNA
+                - Cuantos TAC ABDOMINAL
+                - Cuantas citas de tipo de colonoscopia
+            QUIMIOS:
+                - Conteo de quimios ✅
 
 
     BI:
@@ -152,4 +155,22 @@ CAMBIOS V0.9 A V1.0:
     (2) - arco biopsia y cirugia (percentiles de duraciones)
     (3) - pestaña comparativa con duraciones y VDR, entre distintos tipos de quimio, mortalidad
 
- 
+##################################################################################################################################################################333
+
+CAMBIOS V1.0 A V1.5:
+
+    En relación a los resultados esperados, con la minería de procesos me gustaría tener información que aborde:
+        - Los "cuellos de botella" del proceso. No sé qué resultados del análisis podrían encajar en este objetivo. 
+
+        - Por otro lado, me gustaría tener varios diagramas del flujo de los pacientes tanto de los que entran en la VDR como los que no:
+            - Quizás el más básico sería con las siguientes actividades: 
+                - Última consulta en Atención Primaria
+                - Última asistencia en PAC
+                - Última asistencia en Urgencias
+                - Consulta de Digestivo
+                - Consulta de Medicina interna
+                - COLONOSCOPIA diagnóstica (que coincide con la fecha de extracción de la biopsia)
+                - Primera consulta en Oncología
+                - Primera consulta en Cirugía General
+                - Primer ingreso hospitalario
+                - Fecha de inicio de QT

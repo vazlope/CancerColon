@@ -9,7 +9,7 @@ sys.path.append('C:/Users/pablo/Desktop/INVERBIS/2024/Ribera_Salud/Exploratory_D
 fecha_actual = datetime.now()
 fecha_actual_str = fecha_actual.strftime("%Y-%m-%d %H:%M:%S")
 version = 'V0_1'
-version_out = 'V1'
+version_out = 'V1_5'
 TIME_BEFORE_EXTRACTION = 6*30*24*3600     #! MONTH TO SECONDS
 generate = False
 preprocess = True
@@ -17,10 +17,10 @@ preprocess = True
 
 def charge_data(): 
     path_gen = "/home/pol/Escritorio/INVERBIS/2024/CancerColon/"
-    path_1 = path_gen + "Data/raw_data/VDR.xlsx"
-    path_2 = path_gen + "Data/raw_data/Copia de Términos agrupados.xlsx"
-    path_3 = path_gen + "Data/raw_data/VDR_DatosLaboratorio_Seudonimizados_v.01.00.xlsx"
-    path_4 = path_gen + "Data/raw_data/VDR_DatosNoEstructurados_Seudonimizados.xlsx"
+    path_1 =  "Data/raw_data/VDR.xlsx"
+    path_2 =  "Data/raw_data/Copia de Términos agrupados.xlsx"
+    path_3 =  "Data/raw_data/VDR_DatosLaboratorio_Seudonimizados_v.01.00.xlsx"
+    path_4 =  "Data/raw_data/VDR_DatosNoEstructurados_Seudonimizados.xlsx"
 
     colon = sheet_reader(pd.read_excel(path_1, sheet_name=None))
     termAgrupados = sheet_reader(pd.read_excel(path_2, sheet_name=None))
@@ -150,16 +150,18 @@ def modify_dead_date(trace):
 
 def filter_extraction(df):
 
-    df['FECHA'] = pd.to_datetime(df['FECHA'], format= '%d-%m-%Y %H:%M:%S')
-    df['FECHA_FIN'] = pd.to_datetime(df['FECHA_FIN'], format= '%d-%m-%Y %H:%M:%S')
+    # df['FECHA'] = pd.to_datetime(df['FECHA'], format= '%d-%m-%Y %H:%M:%S')
+    # df['FECHA_FIN'] = pd.to_datetime(df['FECHA_FIN'], format= '%d-%m-%Y %H:%M:%S')
+    df['FECHA'] = pd.to_datetime(df['FECHA'], format='%Y-%m-%d %H:%M:%S')
+    df['FECHA_FIN'] = pd.to_datetime(df['FECHA_FIN'], format='%Y-%m-%d %H:%M:%S')
     grouper = df.groupby('NASI seudonimizado')
 
     dates, traces = [], []
     dates_dict = {}
     for name, trace in grouper:
         trace['Defuncion'] = 'Sin Defuncion'
-        if 'Biopsia diagnóstica' in trace['Actividad'].unique().tolist():
-            df = trace.query(" Actividad == 'Biopsia diagnóstica'")
+        if 'Colonoscopia diagnóstica' in trace['Actividad'].unique().tolist():
+            df = trace.query(" Actividad == 'Colonoscopia diagnóstica'")
             value = df['FECHA'].values[0]
             dates.append(value)
             dates_dict[name] = value
@@ -254,7 +256,7 @@ def surname_Appointments(df, attrib_name):
 
             if trace['Actividad'].values[index] == attrib_name:
                 if trace['Actividade CAPNOR'].values[index] in lista_colono: 
-                    #trace['Actividad'].values[index] = trace['Actividade CAPNOR'].values[index]
+                    trace['Actividad'].values[index] = trace['Actividade CAPNOR'].values[index]
                     trace['Colonoscopia'] = 'Evento presente en la traza'
                     if trace['Tipo vía rápida'].values[index] == "VIA RAPIDA COLON              ":
                         trace['VDR'] = 'Con Via rapida'
@@ -279,7 +281,7 @@ def surname_Appointments(df, attrib_name):
 
 
                 elif trace['Actividade CAPNOR'].values[index] in lista_TCAbdominal: 
-                    #trace['Actividad'].values[index] = 'Realización de TC abdominales'
+                    trace['Actividad'].values[index] = 'Cita TAC Abdominal'
                     trace['Realización TC abdominales'] = 'Evento presente en la traza'
            
                             
@@ -334,7 +336,7 @@ def filter_doctor_visit(df):
     return df[~((df['Actividad'] == 'Visita médico familia') & (~df['Acto'].isin(lista)))]
 
 
-#! filtrar medico familia atencion primario importantes
+#! filtrar cirugias importantes
 def filter_surgery_typology(df):
     # Lista de valores a verificar en el campo 'Acto'
     lista = ['CIRURXIA XERAL E DIXESTIVA']
@@ -351,7 +353,7 @@ def create_initial_activity(df):
     for name, trace in groupon:
 
         # Crear una máscara booleana para identificar las filas donde 'Actividad' es 'biopsia'
-        mask_biopsia = trace['Actividad'] == 'Biopsia diagnóstica'
+        mask_biopsia = trace['Actividad'] == 'Colonoscopia diagnóstica'
         # Crear una máscara booleana para identificar las filas donde 'Actividad' está en la lista
         mask_lista = trace['Actividad'].isin(lista)
         # Crear una máscara booleana que marque las filas que deben eliminarse
@@ -362,7 +364,7 @@ def create_initial_activity(df):
 
         primer_indice = trace.index.to_list()[0]
         print(primer_indice)
-        biopsia_indice = trace[trace['Actividad'] == 'Biopsia diagnóstica'].index.min()
+        biopsia_indice = trace[trace['Actividad'] == 'Colonoscopia diagnóstica'].index.min()
         print(biopsia_indice)
 
         if (biopsia_indice - primer_indice) > 1:
@@ -420,9 +422,25 @@ def conditions_surgery_quimio(cirugia_index, quimioterapia_index, lenght):
     return indice_cirugia_quimioterapia
 
 def appointment_post_biopsia(df):
-    lista = ['Cita en Medicina interna', 'Cita en Oncología', 'Cita en Cirugía General', 'Cita en Digestivo']
     # Agrupar por el identificador de traza
     groupon = df.groupby('NASI seudonimizado')
+
+    df["num_citas_med_interna (Colono-Cirugia/quimio)"] = 0
+    df["num_citas_oncologia (Colono-Cirugia/quimio)"] = 0
+    df["num_citas_med_cir_general (Colono-Cirugia/quimio)"] = 0
+    df["num_citas_digestivo (Colono-Cirugia/quimio)"] = 0
+    df["num_tac_abdominal (Colono-Cirugia/quimio)"] = 0
+    df["num_colonoscopia (Colono-Cirugia/quimio)"] = 0
+    df["num_colonoscopia_VDR (Colono-Cirugia/quimio)"] = 0
+    df["num_PAC (Colono-Cirugia/quimio)"] = 0
+
+    df["num_citas_med_interna (Cirugia/quimio-final)"] = 0
+    df["num_citas_oncologia (Cirugia/quimio-final)"] = 0
+    df["num_citas_med_cir_general (Cirugia/quimio-final)"] = 0
+    df["num_citas_digestivo (Cirugia/quimio-final)"] = 0
+    df["num_tac_abdominal (Cirugia/quimio-final)"] = 0
+    df["num_colonoscopia (Cirugia/quimio-final)"] = 0
+    df["num_PAC (Cirugia/quimio-final)"] = 0
 
     traces = []
     # Iterar sobre cada grupo
@@ -430,7 +448,7 @@ def appointment_post_biopsia(df):
         print(name)
         trace = trace.reset_index(drop=True)
         # Obtener el índice de la biopsia diagnóstica
-        biopsia_indice = trace[trace['Actividad'] == 'Biopsia diagnóstica'].index.min()
+        biopsia_indice = trace[trace['Actividad'] == 'Colonoscopia diagnóstica'].index.min()
 
         # Obtener el índice de la primera ocurrencia de 'Cirugía' y 'Quimioterapia' después de la biopsia
         cirugia_index = trace[trace.index > biopsia_indice][trace['Actividad'] == 'Cirugia'].index.min()
@@ -442,6 +460,30 @@ def appointment_post_biopsia(df):
         #logica entre cirugia y quimio
         indice_cirugia_quimioterapia = conditions_surgery_quimio(cirugia_index, quimioterapia_index, len(trace))
         print(biopsia_indice,indice_cirugia_quimioterapia)
+
+        #Contadores entre biosia y cirugia/quimio
+        rango_indices = trace.index[biopsia_indice:indice_cirugia_quimioterapia]  # Puedes ajustar el rango según tu necesidad
+
+        trace["num_citas_med_interna (Colono-Cirugia/quimio)"] = trace.loc[rango_indices, 'Actividad'].eq('Cita en Medicina interna').sum()
+        trace["num_citas_oncologia (Colono-Cirugia/quimio)"] = trace.loc[rango_indices, 'Actividad'].eq('Cita en Oncología').sum()
+        trace["num_citas_med_cir_general (Colono-Cirugia/quimio)"] = trace.loc[rango_indices, 'Actividad'].eq('Cita en Cirugía General').sum()
+        trace["num_citas_digestivo (Colono-Cirugia/quimio)"] = trace.loc[rango_indices, 'Actividad'].eq('Cita en Digestivo').sum()
+        trace["num_tac_abdominal (Colono-Cirugia/quimio)"] = trace.loc[rango_indices, 'Actividad'].eq('Cita TAC Abdominal').sum()
+        trace["num_colonoscopia (Colono-Cirugia/quimio)"] = trace.loc[rango_indices, 'Actividad'].eq('COLONOSCOPIA').sum()
+        trace["num_colonoscopia_VDR (Colono-Cirugia/quimio)"] = trace.loc[rango_indices, 'Actividad'].eq('COLONOSCOPIA VIA RAPIDA').sum()
+        trace["num_PAC (Colono-Cirugia/quimio)"] = trace.loc[rango_indices, 'Actividad'].eq('Asistencia a punto de Atención Continuada').sum()
+
+        #Contadores entre cirugia/quimio y el final
+        rango_indices = trace.index[indice_cirugia_quimioterapia:]  # Puedes ajustar el rango según tu necesidad
+
+        trace["num_citas_med_interna (Cirugia/quimio-final)"] = trace.loc[rango_indices, 'Actividad'].eq('Cita en Medicina interna').sum()
+        trace["num_citas_oncologia (Cirugia/quimio-final)"] = trace.loc[rango_indices, 'Actividad'].eq('Cita en Oncología').sum()
+        trace["num_citas_med_cir_general (Cirugia/quimio-final)"] = trace.loc[rango_indices, 'Actividad'].eq('Cita en Cirugía General').sum()
+        trace["num_citas_digestivo (Cirugia/quimio-final)"] = trace.loc[rango_indices, 'Actividad'].eq('Cita en Digestivo').sum()
+        trace["num_tac_abdominal (Cirugia/quimio-final)"] = trace.loc[rango_indices, 'Actividad'].eq('Cita TAC Abdominal').sum()
+        trace["num_colonoscopia (Cirugia/quimio-final)"] = trace.loc[rango_indices, 'Actividad'].eq('COLONOSCOPIA').sum()
+        trace["num_colonoscopia_VDR (Cirugia/quimio-final)"] = trace.loc[rango_indices, 'Actividad'].eq('COLONOSCOPIA VIA RAPIDA').sum()
+        trace["num_PAC (Cirugia/quimio-final)"] = trace.loc[rango_indices, 'Actividad'].eq('Asistencia a punto de Atención Continuada').sum()
 
         interna = trace[trace.index > indice_cirugia_quimioterapia][trace['Actividad'] == 'Cita en Medicina interna'].index
         Oncologia = trace[trace.index > indice_cirugia_quimioterapia][trace['Actividad'] == 'Cita en Oncología'].index
@@ -457,8 +499,7 @@ def appointment_post_biopsia(df):
         list_to_lists.extend(general)
         list_to_lists.extend(digestivo)
         list_to_lists.extend(medico)
-        print(list_to_lists)
-    
+
         trace = trace.drop(list_to_lists)
         traces.append(trace)
 
@@ -482,12 +523,93 @@ def only_first_quimio(df):
     return pd.concat(traces)
 
 
+def change_dead_dates(df):
+    #cargar df muertes
+    path = "Data/raw_data/Subestudio estadística mortalidad VDR CCR (Inverbis).xlsx"
+    defunciones = pd.read_excel(path)
+    #crear diccionario cruce
+    defunciones_dict = defunciones[['NASI seudonimizado','Data defunción 01/01/AAAA' ]]
+    defunciones_dict['Data defunción 01/01/AAAA'] = pd.to_datetime(defunciones_dict['Data defunción 01/01/AAAA'], format= '%d-%m-%Y %H:%M:%S')
+    defunciones_dict_clear = defunciones_dict.dropna(subset=['Data defunción 01/01/AAAA'])
+    defunciones_dict_clear['Data defunción 01/01/AAAA'] = defunciones_dict_clear['Data defunción 01/01/AAAA']
+    fecha_muerte = defunciones_dict_clear['Data defunción 01/01/AAAA'].tolist()
+    id = defunciones_dict_clear['NASI seudonimizado'].tolist()
+    dict_change = dict(zip(id, fecha_muerte))
+    # Aplicar la traducción utilizando el método replace de pandas
+    df['Actividad'] = df['Actividad'].replace(dict_change) 
+    df.loc[df['Actividad'] == 'Defunción', 'FECHA'] = df.loc[df['Actividad'] == 'Defunción', 'NASI seudonimizado'].map(dict_change)
+    df.loc[df['Actividad'] == 'Defunción', 'FECHA_FIN'] = df.loc[df['Actividad'] == 'Defunción', 'NASI seudonimizado'].map(dict_change)
+    # colon['FECHA'] = pd.to_datetime(colon['FECHA'], format= '%d-%m-%Y %H:%M:%S')
+    # colon['FECHA_FIN'] = pd.to_datetime(colon['FECHA_FIN'], format= '%d-%m-%Y %H:%M:%S')
+    return df
+
+
+def counters_pre_biopsia(df):
+    # Agrupar por el identificador de traza
+    groupon = df.groupby('NASI seudonimizado')
+    df["NUM_LAXANTES"] = 0
+
+    traces = []
+    # Iterar sobre cada grupo
+    for name, trace in groupon:
+        print(name)
+    
+        # Convertir la columna FECHA a tipo datetime
+        trace['FECHA'] = pd.to_datetime(trace['FECHA'], format= '%d-%m-%Y %H:%M:%S')
+        # Encontrar la fecha de la actividad 'Biopsia'
+        fecha_biopsia = trace.loc[trace['Actividad'] == 'Colonoscopia diagnóstica', 'FECHA'].iloc[0]
+        # Restar 6 meses a la fecha de la biopsia
+        fecha_limite = fecha_biopsia - pd.DateOffset(months=6)
+        # Filtrar los registros dentro del rango de tiempo
+        registros_filtrados = trace[(trace['FECHA'] >= fecha_limite) & (trace['FECHA'] <= fecha_biopsia)]
+        # Contar el número de veces que aparece 'laxante' en el campo 'medicamentos'
+        num_laxante_formador = registros_filtrados['Subg. químico terapéutico ATC disp'].value_counts().get('LAXANTES FORMADORES DE VOLUMEN', 0)
+        num_laxante_contacto = registros_filtrados['Subg. químico terapéutico ATC disp'].value_counts().get('LAXANTES DE CONTACTO', 0)
+        num_laxante_osmotico = registros_filtrados['Subg. químico terapéutico ATC disp'].value_counts().get('LAXANTES OSMÓTICOS', 0)
+        print(f"""Número de veces que aparece 'laxante' desde al menos 6 meses hacia atrás desde la actividad 'Biopsia':\n
+              {num_laxante_formador}
+              {num_laxante_contacto}
+              {num_laxante_osmotico}""")
+        print(f"Numero de laxantes totales {num_laxante_formador + num_laxante_contacto + num_laxante_osmotico}")
+        trace["NUM_LAXANTES"] = num_laxante_formador + num_laxante_contacto + num_laxante_osmotico
+        traces.append(trace)
+
+    return pd.concat(traces)
+
+
+def counters_quimio(df):
+    # Agrupar por el identificador de traza
+    groupon = df.groupby('NASI seudonimizado')
+    df["NUM_QUIMIOS"] = 0
+
+    traces = []
+    # Iterar sobre cada grupo
+    for name, trace in groupon:
+        print(name)
+    
+        # Convertir la columna FECHA a tipo datetime
+        trace['FECHA'] = pd.to_datetime(trace['FECHA'], format= '%d-%m-%Y %H:%M:%S')
+        # Encontrar la fecha de la actividad 'Biopsia'
+        fecha_biopsia = trace.loc[trace['Actividad'] == 'Colonoscopia diagnóstica', 'FECHA'].iloc[0]
+        # Filtrar los registros dentro del rango de tiempo
+        registros_filtrados = trace[trace['FECHA'] >= fecha_biopsia]
+        # Contar el número de veces que aparece 'laxante' en el campo 'medicamentos'
+        num_quimios = registros_filtrados['Actividad'].value_counts().get('Quimioterapia', 0)
+        # num_laxante_contacto = registros_filtrados['Subg. químico terapéutico ATC disp'].value_counts().get('LAXANTES DE CONTACTO', 0)
+        # num_laxante_osmotico = registros_filtrados['Subg. químico terapéutico ATC disp'].value_counts().get('LAXANTES OSMÓTICOS', 0)
+        print(f"Número de veces que aparece quimioterapia desde la actividad 'Biopsia':{num_quimios}")
+        trace["NUM_QUIMIOS"] = num_quimios
+        traces.append(trace)
+
+    return pd.concat(traces)
+
+
 def save_semiprocessed_df(df):
-    df.to_csv(path_gen+"Data/processed_data/CancerColon_semi"+str(version_out)+".csv", date_format="%d-%m-%Y %H:%M:%S", index=False,  encoding="UTF-8", sep = ';')
+    df.to_csv("Data/processed_data/CancerColon_semi"+str(version_out)+".csv", date_format="%d-%m-%Y %H:%M:%S", index=False,  encoding="UTF-8", sep = ';')
 
 
 def save_processed_df(df):
-    df.to_csv(path_gen+"Data/processed_data/CancerColon_filtered"+str(version_out)+".csv", date_format="%d-%m-%Y %H:%M:%S", index=False,  encoding="UTF-8", sep = ';')
+    df.to_csv("Data/processed_data/CancerColon_filtered"+str(version_out)+".csv", date_format="%d-%m-%Y %H:%M:%S", index=False,  encoding="UTF-8", sep = ';')
     print(df.columns)
     #Crear version basica
     df_2 = df[['NASI seudonimizado', 'FECHA', 'FECHA_FIN','Actividad']]
@@ -507,7 +629,7 @@ if __name__ == "__main__":
     #! Cargo dataset raw
     else:
         path_gen = "/home/pol/Escritorio/INVERBIS/2024/CancerColon/"
-        path_1 = path_gen + "Data/processed_data/CancerColon_raw.csv"
+        path_1 =  "Data/processed_data/CancerColon_raw.csv"
         colon = pd.read_csv(path_1, sep= ';')
         print(colon.shape)
     
@@ -529,17 +651,24 @@ if __name__ == "__main__":
         colon = fix_dates(colon,
                           start_year= 2012,
                           end_year = 2020)
+        #! Arreglar fechas de defunción con fechas reales
+        colon = change_dead_dates(colon)
 
         #! Eliminar nan
         colon = delete_nan(colon)
 
+        #! Aqui irá lo de los conteos
+        #save_semiprocessed_df(colon)
+        colon = counters_pre_biopsia(colon) 
+        colon = counters_quimio(colon) 
+
         #! Filtrar por encima de la fecha de extracción y arreglar la actividad de Defunción
         colon_filtered = filter_extraction(colon)
        
-        #!Pone apellidos a citas de tipo colonoscopia y crea booleanos para identificar ids con colonoscopia y con VDR
+        #!Pone apellidos a citas de tipo colonoscopia y crea booleanos para identificar ids con colonoscopia y con VDR, tambien creo columnas de contadores posteriores a biopsia
         colon_filtered = surname_Appointments(colon_filtered,
                                               'Cita')
-        
+        save_semiprocessed_df(colon_filtered)
         #!Creo columna con duracion lista de espera y lo elimino como actividad
         colon_filtered = waiting_list_duration(colon_filtered,
                                       'Entrada Lista de Espera',
@@ -562,7 +691,8 @@ if __name__ == "__main__":
         #! Crear actividad inicial
         colon_filtered = create_initial_activity(colon_filtered)
 
-        #! Filtro los 4 tipos de citas importantes que hay detras de la actividad de cirugia/quimioterapia y tambien citas medicas solo anterioires a la biopsia
+        #! Filtro los 4 tipos de citas importantes que hay detras de la actividad de cirugia/quimioterapia
+        #! y tambien citas medicas solo anterioires a la biopsia y contadores entre biopsia y cirugia/quimioterapia y posterior a cirugia/quimioterapia
         colon_filtered = appointment_post_biopsia(colon_filtered) 
 
         #! Elimino todas las quimios duplicadas posterioires a la primera quimio (primer ciclo de quimio)
@@ -573,11 +703,11 @@ if __name__ == "__main__":
         
         #!Eliminar '\n' y '\r' en valores y cabeceras
         colon_filtered = colon_filtered.replace({r'\r': '', r'\n': ''}, regex=True)
-        save_semiprocessed_df(colon_filtered)
+        #save_semiprocessed_df(colon_filtered)
         #!Antes de guardarlo tengo que eliminar ciertas actividades
         conservate_list = [ 
             'Cita en Medicina interna',
-            'Biopsia diagnóstica',
+            'Colonoscopia diagnóstica',
             'Ingreso hospitalario',
             'Cirugia Programada',
             'Alta Hospitalizacion',
@@ -587,10 +717,13 @@ if __name__ == "__main__":
             'Quimioterapia',
             'Cita en Digestivo',
             'Cirugia Urgente',
-            'Cita en Oncología'
+            'Cita en Oncología',
             ]
  
         colon_filtered = conservate_activity(colon_filtered, conservate_list)
+
+        #! Arreglar fechas de defunción con fechas reales
+        colon_filtered = change_dead_dates(colon_filtered)
 
         #!  Visualizar info y dimension df final
         df_info(colon_filtered)
